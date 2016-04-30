@@ -142,15 +142,20 @@ class Bot(_GenericBot):
 
     def fetch(self, block_name):
         """Mine and return a block to the player."""
-        #todo: Get the block location
-        imag_bot = _ImaginearyBot(self._pos, self._inventory)
-        mine_prob = _MineProblem(imag_bot)
+        imag_bot = _ImaginaryBot(self._pos, self._inventory)
+        block_id = getattr(block, block_name).id
+        block_loc = self._get_block_loc(block_id)
+        mine_prob = _MineProblem(imag_bot, block_loc)
         mine_actions = astar(mine_prob, mine_heuristic)
         imag_bot.take_actions(mine_actions)
-        return_prob = _ReturnProblem(imag_bot)
+        return_prob = _ReturnProblem(imag_bot, block_id)
         return_actions = astar(return_prob, return_heuristic)
         actions = mine_actions + return_actions
         #todo: Place the block mined next to the player
+
+    def _get_block_loc(self, block_id):
+        """Return the location of the block."""
+        return _Vec3() #todo
 
     def _set_block(self, pos, block):
         """Place an actual block in the world.
@@ -181,6 +186,10 @@ class _MineProblem(SearchProblem):
         block is a block id."""
         self._bot = imag_bot
         self._block = block
+
+    def get_block(self):
+        """Return the block."""
+        return self._block
 
     def getStartState(self):
         """Return the bot passed in."""
