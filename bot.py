@@ -4,6 +4,7 @@ from copy import deepcopy
 
 import mcpi.minecraft as minecraft
 from mcpi.vec3 import Vec3
+import mcpi.block as block
 
 from search import SearchProblem
 
@@ -19,11 +20,12 @@ class _Vec3(Vec3):
 
 
 class _GenericBot:
-    """A generic bot"""
+    """A generic bot."""
 
     def __init__(self, pos, inventory=None):
         """Initialize with an empty inventory.
 
+        pos should be a Vec3.
         inventory is a dictionary. If None, an empty one will be used."""
         if inventory is None:
             self.__inventory = {}
@@ -47,15 +49,15 @@ class _GenericBot:
         return block in self.__inventory
 
     def _set_block(self, block, pos):
-        """Set a block. block is the block id. pos is a Vec3 object."""
+        """Set a block. block is the block id. pos is a _Vec3 object."""
         raise NotImplementedError
 
     def _get_block(self, pos):
-        """Get the block at the position."""
+        """Get the block at the position. pos is a _Vec3 object."""
         raise NotImplementedError
 
     def _move(self, pos):
-        """Move there."""
+        """Move there. pos should be a Vec3."""
         self._pos = pos
 
 
@@ -64,16 +66,20 @@ class _ImaginaryBot(_GenericBot):
     in the world."""
 
     def __init__(self, pos, inventory=None):
-        """Create a new bot."""
+        """Create a new bot.
+
+        pos should be a Vec3."""
         _GenericBot.__init__(self, pos, inventory)
         self._changes = {} # Changes to the world
 
     def _set_block(self, block, pos):
-        """Set a block. block is the block id. pos is a Vec3 object."""
+        """Set a block. block is the block id. pos is a _Vec3 object."""
         self._changes[pos] = block
 
     def _get_block(self, pos):
-        """Get the block at the position."""
+        """Get the block at the position.
+
+        pos is a _Vec3 object."""
         if pos in self._changes:
             return self._changes[pos]
         else:
@@ -81,11 +87,18 @@ class _ImaginaryBot(_GenericBot):
 
 
 class Bot(_GenericBot):
-    """The real bot."""
+    """The real bot.
+
+    All vector arguments are Vec3s."""
 
     def __init__(self):
         """Create a bot next to the player."""
-        pass #todo
+        pos = _MINECRAFT.player.getTilePos() + Vec3(2, 0, 0)
+        while _MINECRAFT.getBlock(pos) == block.AIR.id:
+            pos.y -= 1
+        while _MINECRAFT.getBlock(pos) != block.AIR.id:
+            pos.y += 1
+        _GenericBot.__init__(self, pos)
 
     def fetch(self, block_name):
         """Mine and return a block to the player."""
