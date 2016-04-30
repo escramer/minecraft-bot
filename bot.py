@@ -71,6 +71,10 @@ class _GenericBot:
         """Return whether or not the bot contains the block id."""
         return block in self._inventory
 
+    def get_block(self, pos):
+        """Get the block at the position. pos is a _Vec3 object."""
+        raise NotImplementedError
+
     def _get_move_actions(self):
         """Return a list of legal movement actions."""
         return [] #todo
@@ -89,10 +93,6 @@ class _GenericBot:
 
     def _set_block(self, pos, block):
         """Set a block. block is the block id. pos is a _Vec3 object."""
-        raise NotImplementedError
-
-    def get_block(self, pos):
-        """Get the block at the position. pos is a _Vec3 object."""
         raise NotImplementedError
 
     def _move(self, pos):
