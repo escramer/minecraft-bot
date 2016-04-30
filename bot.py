@@ -160,7 +160,8 @@ class _MineProblem(SearchProblem):
         """Initialize the problem with an _ImaginaryBot.
 
         block is a block id."""
-        pass #todo
+        self._bot = imag_bot
+        self._block = block
 
     def getStartState(self):
         """Return the bot passed in."""
@@ -168,11 +169,16 @@ class _MineProblem(SearchProblem):
 
     def isGoalState(self, state):
         """Return whether or not the bot has the block."""
-        return True #todo
+        return state.contains(self._block)
 
     def getSuccessors(self, state):
         """Return the successors."""
-        return [] #todo
+        rtn = []
+        for action in state.get_legal_actions():
+            successor = deepcopy(state)
+            successor.take_action(action)
+            rtn.append((successor, action, 1))
+        return rtn
 
 
 class _ReturnProblem(SearchProblem):
