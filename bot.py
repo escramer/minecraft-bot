@@ -11,6 +11,8 @@ from search import SearchProblem, astar
 
 _MINECRAFT = minecraft.Minecraft.create()
 
+_AIR = block.AIR.id
+
 
 class _Vec3(Vec3):
     """A Vec3 that is hashable"""
@@ -131,9 +133,9 @@ class Bot(_GenericBot):
     def __init__(self):
         """Create a bot next to the player."""
         pos = _MINECRAFT.player.getTilePos() + Vec3(2, 0, 0)
-        while _MINECRAFT.getBlock(pos) == block.AIR.id:
+        while _MINECRAFT.getBlock(pos) == _AIR:
             pos.y -= 1
-        while _MINECRAFT.getBlock(pos) != block.AIR.id:
+        while _MINECRAFT.getBlock(pos) != _AIR:
             pos.y += 1
         _GenericBot.__init__(self, pos)
         self._move(pos)
@@ -162,8 +164,8 @@ class Bot(_GenericBot):
 
     def _move(self, pos):
         """Move there, and set the appropriate blocks."""
-        self._set_block(self._pos, block.AIR.id)
-        self._set_block(self._pos + Vec3(0, 1, 0), block.AIR.id)
+        self._set_block(self._pos, _AIR)
+        self._set_block(self._pos + Vec3(0, 1, 0), _AIR)
         self._set_block(pos, self._BOT_BLOCK)
         self._set_block(pos + Vec3(0, 1, 0), self._BOT_BLOCK)
         self._pos = pos
