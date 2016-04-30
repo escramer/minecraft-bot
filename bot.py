@@ -43,6 +43,23 @@ class _GenericBot:
 
         If block is None, return all legal actions. Otherwise, return all
         legal actions that don't involve placing the block."""
+        return self._get_move_actions() + self._get_mine_actions() + \
+            self._get_placement_actions(block)
+
+    def _get_move_actions(self):
+        """Return a list of legal movement actions."""
+        return [] #todo
+
+    def _get_mine_actions(self):
+        """Return a list of legal mining actions."""
+        return [] #todo
+
+    def _get_placement_actions(self, block=None):
+        """Return a list of legal actions that only involve placing a block
+        from the inventory.
+
+        block is a block id. It is the block that should not be placed. If None,
+        any block can be placed."""
         return [] #todo
 
     def contains(self, block):
