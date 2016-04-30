@@ -89,7 +89,7 @@ class _GenericBot:
         """Set a block. block is the block id. pos is a _Vec3 object."""
         raise NotImplementedError
 
-    def _get_block(self, pos):
+    def get_block(self, pos):
         """Get the block at the position. pos is a _Vec3 object."""
         raise NotImplementedError
 
@@ -113,7 +113,7 @@ class _ImaginaryBot(_GenericBot):
         """Set a block. block is the block id. pos is a _Vec3 object."""
         self._changes[pos] = block
 
-    def _get_block(self, pos):
+    def get_block(self, pos):
         """Get the block at the position.
 
         pos is a _Vec3 object."""
@@ -163,7 +163,7 @@ class Bot(_GenericBot):
         block is a block id."""
         _MINECRAFT.setBlock(pos, block)
 
-    def _get_block(self, pos):
+    def get_block(self, pos):
         """Get the block at the position."""
         return _MINECRAFT.getBlock(pos)
 
