@@ -7,7 +7,7 @@ import mcpi.minecraft as minecraft
 from mcpi.vec3 import Vec3
 import mcpi.block as block
 
-from search import SearchProblem
+from search import SearchProblem, astar
 
 _MINECRAFT = minecraft.Minecraft.create()
 
@@ -29,14 +29,31 @@ class _GenericBot:
         pos should be a Vec3.
         inventory is a dictionary. If None, an empty one will be used."""
         if inventory is None:
-            self.__inventory = {}
+            self._inventory = {}
         else:
-            self.__inventory = deepcopy(inventory)
+            self._inventory = deepcopy(inventory)
         self._pos = pos
 
     def take_action(self, action):
         """Take the action (acquired from _get_legal_actions)."""
         pass #todo
+
+    def take_actions(self, actions, seconds=None):
+        """Take these actions. If seconds is not None, sleep 'seconds' 
+        seconds.
+        """
+        if not actions:
+            return
+
+        self.take_action(actions[0])
+        for action in actions[1:]:
+            if seconds is not None:
+                sleep(seconds)
+            self.take_action(action)
+
+    def get_pos(self):
+        """Return the position."""
+        return deepcopy(self._pos)
 
     def get_legal_actions(self, block=None):
         """Return a list of legal actions.
@@ -45,6 +62,10 @@ class _GenericBot:
         legal actions that don't involve placing the block."""
         return self._get_move_actions() + self._get_mine_actions() + \
             self._get_placement_actions(block)
+
+    def contains(self, block):
+        """Return whether or not the bot contains the block id."""
+        return block in self._inventory
 
     def _get_move_actions(self):
         """Return a list of legal movement actions."""
@@ -61,10 +82,6 @@ class _GenericBot:
         block is a block id. It is the block that should not be placed. If None,
         any block can be placed."""
         return [] #todo
-
-    def contains(self, block):
-        """Return whether or not the bot contains the block id."""
-        return block in self.__inventory
 
     def _set_block(self, pos, block):
         """Set a block. block is the block id. pos is a _Vec3 object."""
@@ -123,7 +140,15 @@ class Bot(_GenericBot):
 
     def fetch(self, block_name):
         """Mine and return a block to the player."""
-        pass #todo
+        #todo: Get the block location
+        imag_bot = _ImaginearyBot(self._pos, self._inventory)
+        mine_prob = _MineProblem(imag_bot)
+        mine_actions = astar(mine_prob, mine_heuristic)
+        imag_bot.take_actions(mine_actions)
+        return_prob = _ReturnProblem(imag_bot)
+        return_actions = astar(return_prob, return_heuristic)
+        actions = mine_actions + return_actions
+        #todo: Place the block mined next to the player
 
     def _set_block(self, pos, block):
         """Place an actual block in the world.
@@ -142,14 +167,6 @@ class Bot(_GenericBot):
         self._set_block(pos, self._BOT_BLOCK)
         self._set_block(pos + Vec3(0, 1, 0), self._BOT_BLOCK)
         self._pos = pos
-
-    def _take_actions(self, actions):
-        """Take these actions with a delay inbetween."""
-        if actions:
-            self._take_action(actions[0])
-            for action in actions[1:]:
-                sleep(1)
-                self._take_action(action)
 
 
 class _MineProblem(SearchProblem):
@@ -189,7 +206,9 @@ class _ReturnProblem(SearchProblem):
         """Initialized the problem with an _ImaginaryBot.
 
         block is a block id."""
-        pass #todo
+        self._bot = image_bot
+        self._block = block
+        self._player_loc = _MINECRAFT.player.getTilePos()
 
     def getStartState(self):
         """Return the bot passed in."""
@@ -197,9 +216,33 @@ class _ReturnProblem(SearchProblem):
 
     def isGoalState(self, state):
         """Return whether or not the bot is next to the player."""
-        return True #todo
+        diff = state.get_pos() - self._player_loc
+        return diff.y == 0 and (diff.x == 0 or diff.z == 0) and \
+            abs(diff.x) + abs(diff.z) == 2 and \
+            self._player_loc + diff/2 + Vec3(0, -1, 0)
 
     def getSuccessors(self, state):
         """Return the successors."""
-        return [] #todo
+        rtn = []
+        for action in state.get_legal_actions(self._block):
+            successor = deepcopy(state)
+            successor.take_action(action)
+            rtn.append((successor, action, 1))
+        return rtn
+
+
+def mine_heuristic(bot, problem):
+    """Return the mining heuristic.
+
+    bot is an _ImaginaryBot.
+    """
+    return 0 #todo
+
+
+def return_heurist(bot, problem):
+    """Return the return heuristic.
+
+    bot is an _ImaginaryBot.
+    """
+    return 0 #todo
 
