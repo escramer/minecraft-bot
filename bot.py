@@ -1,6 +1,7 @@
 """Module for the bot"""
 
 from copy import deepcopy
+from time import sleep
 
 import mcpi.minecraft as minecraft
 from mcpi.vec3 import Vec3
@@ -48,7 +49,7 @@ class _GenericBot:
         """Return whether or not the bot contains the block id."""
         return block in self.__inventory
 
-    def _set_block(self, block, pos):
+    def _set_block(self, pos, block):
         """Set a block. block is the block id. pos is a _Vec3 object."""
         raise NotImplementedError
 
@@ -72,7 +73,7 @@ class _ImaginaryBot(_GenericBot):
         _GenericBot.__init__(self, pos, inventory)
         self._changes = {} # Changes to the world
 
-    def _set_block(self, block, pos):
+    def _set_block(self, pos, block):
         """Set a block. block is the block id. pos is a _Vec3 object."""
         self._changes[pos] = block
 
@@ -91,6 +92,8 @@ class Bot(_GenericBot):
 
     All vector arguments are Vec3s."""
 
+    _BOT_BLOCK = block.IRON.id
+
     def __init__(self):
         """Create a bot next to the player."""
         pos = _MINECRAFT.player.getTilePos() + Vec3(2, 0, 0)
@@ -99,27 +102,37 @@ class Bot(_GenericBot):
         while _MINECRAFT.getBlock(pos) != block.AIR.id:
             pos.y += 1
         _GenericBot.__init__(self, pos)
+        self._move(pos)
 
     def fetch(self, block_name):
         """Mine and return a block to the player."""
         pass #todo
 
-    def _set_block(self, block, pos):
-        """Place an actual block in the world."""
-        pass #todo
+    def _set_block(self, pos, block):
+        """Place an actual block in the world.
+
+        block is a block id."""
+        _MINECRAFT.setBlock(pos, block)
 
     def _get_block(self, pos):
         """Get the block at the position."""
-        return 0 #todo
+        return _MINECRAFT.getBlock(pos)
 
     def _move(self, pos):
         """Move there, and set the appropriate blocks."""
+        self._set_block(self._pos, block.AIR.id)
+        self._set_block(self._pos + Vec3(0, 1, 0), block.AIR.id)
+        self._set_block(pos, self._BOT_BLOCK)
+        self._set_block(pos + Vec3(0, 1, 0), self._BOT_BLOCK)
         self._pos = pos
-        # Set the blocks
 
     def _take_actions(self, actions):
         """Take these actions with a delay inbetween."""
-        pass #todo
+        if actions:
+            self._take_action(actions[0])
+            for action in actions[1:]:
+                sleep(1)
+                self._take_action(action)
 
 
 class _MineProblem(SearchProblem):
