@@ -36,7 +36,7 @@ class _GenericBot:
             self._inventory = {}
         else:
             self._inventory = deepcopy(inventory)
-        self._pos = pos
+        self._pos = deepcopy(pos)
 
     def take_action(self, action):
         """Take the action (acquired from _get_legal_actions)."""
@@ -97,7 +97,7 @@ class _GenericBot:
 
     def _move(self, pos):
         """Move there. pos should be a Vec3."""
-        self._pos = pos
+        self._pos = deepcopy(pos)
 
 
 class _ImaginaryBot(_GenericBot):
@@ -113,7 +113,7 @@ class _ImaginaryBot(_GenericBot):
 
     def _set_block(self, pos, block):
         """Set a block. block is the block id. pos is a _Vec3 object."""
-        self._changes[pos] = block
+        self._changes[deepcopy(pos)] = block
 
     def get_block(self, pos):
         """Get the block at the position.
@@ -147,9 +147,10 @@ class Bot(_GenericBot):
         imag_bot = _ImaginaryBot(self._pos, self._inventory)
         block_id = getattr(block, block_name).id
         block_loc = self._get_block_loc(block_id)
-        mine_prob = _MineProblem(imag_bot, block_loc)
+        mine_prob = _MineProblem(imag_bot, block_loc, block_id)
         mine_actions = astar(mine_prob, mine_heuristic)
-        imag_bot.take_actions(mine_actions)
+        self.take_actions(mine_actions)
+        imag_bot = _ImaginaryBot(self._pos, self._inventory)
         return_prob = _ReturnProblem(imag_bot, block_id)
         return_actions = astar(return_prob, return_heuristic)
         actions = mine_actions + return_actions
@@ -182,16 +183,18 @@ class _MineProblem(SearchProblem):
     """The problem of finding the block and mining it (not returning
     it)."""
 
-    def __init__(self, imag_bot, block):
+    def __init__(self, imag_bot, block_loc, block_id):
         """Initialize the problem with an _ImaginaryBot.
 
-        block is a block id."""
+        block_loc is a Vec3.
+        """
         self._bot = imag_bot
-        self._block = block
+        self._block_loc = deep_copy(block_loc)
+        self._block_id = block_id
 
-    def get_block(self):
+    def get_block_loc(self):
         """Return the block."""
-        return self._block
+        return deepcopy(self._block_loc)
 
     def getStartState(self):
         """Return the bot passed in."""
@@ -199,7 +202,7 @@ class _MineProblem(SearchProblem):
 
     def isGoalState(self, state):
         """Return whether or not the bot has the block."""
-        return state.contains(self._block)
+        return state.contains(self._block_id)
 
     def getSuccessors(self, state):
         """Return the successors."""
