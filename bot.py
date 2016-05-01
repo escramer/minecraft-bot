@@ -42,7 +42,10 @@ class _GenericBot:
 
     def take_action(self, action):
         """Take the action (acquired from _get_legal_actions)."""
-        getattr(self, action['func'])(*action['args'], **action['kwargs'])
+        getattr(self, action['func'])(
+            *action.get('args', ()), 
+            **action.get('kwargs', {})
+        )
 
     def take_actions(self, actions, seconds=None):
         """Take these actions. If seconds is not None, sleep 'seconds' 
@@ -66,7 +69,7 @@ class _GenericBot:
 
         If block is None, return all legal actions. Otherwise, return all
         legal actions that don't involve placing the block."""
-        return self._get_move_actions() + self._get_mine_actions() + \
+        return self._get_move_actions(block) + self._get_mine_actions() + \
             self._get_placement_actions(block)
 
     def contains(self, block):
@@ -134,9 +137,38 @@ class _GenericBot:
         self.add_to_inv(block)
         self._set_block(loc, _AIR)
 
-    def _get_move_actions(self):
-        """Return a list of legal movement actions."""
-        return [] #todo
+    def _get_move_actions(self, exclude=None):
+        """Return a list of legal movement actions.
+
+        exclude is the block to exclude.
+        """
+        rtn = []
+
+        # Check for moving up
+        if self._get_block(self._pos + _Vec3(0, 2, 0)) in {_AIR, _WATER}:
+            if self._surrounded():
+                rtn.append({
+                    'func': '_move',
+                    'args': self._pos + _Vec3(0, 1, 0)
+                })
+            else:
+                rtn.append({
+                    'func': '_move_up',
+                    'args': (exclude,)
+                })
+
+        # Check for moving down
+        hidden_block = self._get_block(self._pos + _Vec3(0, -2, 0))
+        if hidden_block == _WATER or hidden_block not in {_AIR, _LAVA}:
+            rtn.append({'func': '_move_down'})
+
+        #todo
+            
+            
+
+    def _surrounded(self):
+        """Return whether or not the bot is surrounded by water."""
+        return False #todo
 
     def _get_mine_actions(self):
         """Return a list of legal mining actions."""
