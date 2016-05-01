@@ -130,7 +130,9 @@ class _GenericBot:
 
     def _mine(self, loc):
         """Mine the block. loc is a _Vec3."""
-        pass #todo
+        block = self._get_block(loc)
+        self.add_to_inv(block)
+        self._set_block(loc, _AIR)
 
     def _get_move_actions(self):
         """Return a list of legal movement actions."""
