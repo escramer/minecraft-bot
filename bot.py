@@ -151,6 +151,17 @@ class _ImaginaryBot(_GenericBot):
         else:
             return _MINECRAFT.getBlock(pos)
 
+    def _key_vals(self, dict_):
+        """Return a list of key-val tuples."""
+        return [(key, val) for key, val in dict_.iteritems()]
+
+    def __hash__(self):
+        """Return the hash."""
+        return hash(frozenset([self._pos] + \
+                 self._key_vals(self._inventory) + \
+                 self._key_vals(self._changes)
+        ))
+
 
 class Bot(_GenericBot):
     """The real bot.
