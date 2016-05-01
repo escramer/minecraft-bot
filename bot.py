@@ -42,7 +42,7 @@ class _GenericBot:
 
     def take_action(self, action):
         """Take the action (acquired from _get_legal_actions)."""
-        pass #todo
+        getattr(self, action['func'])(*action['args'], **action['kwargs'])
 
     def take_actions(self, actions, seconds=None):
         """Take these actions. If seconds is not None, sleep 'seconds' 
