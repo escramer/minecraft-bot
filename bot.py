@@ -113,7 +113,8 @@ class _GenericBot:
         """Move and mine the block below."""
         new_pos = self._pos + _Vec3(0, -1, 0)
         block = self._get_block(new_pos)
-        self._add_to_inv(block)
+        if block != _WATER:
+            self._add_to_inv(block)
         self._move(new_pos)
         
     def _add_to_inv(self, block):
@@ -149,7 +150,7 @@ class _GenericBot:
             if self._surrounded():
                 rtn.append({
                     'func': '_move',
-                    'args': self._pos + _Vec3(0, 1, 0)
+                    'args': (self._pos + _Vec3(0, 1, 0),)
                 })
             else:
                 rtn.append({
@@ -163,16 +164,19 @@ class _GenericBot:
             rtn.append({'func': '_move_down'})
 
         # Check for side moves
-        for dir_ in [
-            _Vec3(1, 0, 0), _Vec3(-1, 0, 0), _Vec3(0, 0, 1), _Vec3(0, 0, -1)
-        ]:
+        for dir_ in _adj_dirs():
             rtn.extend(self._side_moves(dir_))
 
         return rtn
 
     def _side_moves(self, dir_):
-        """Return the list of side moves."""
-        return [] #todo
+        """Return the list of side moves.
+
+        dir_ is an adjacent direction."""
+        rtn = []
+
+        # Check if it can move up
+        pass #todo
 
     def _surrounded(self):
         """Return whether or not the bot is surrounded by water."""
@@ -390,3 +394,8 @@ def _to_my_vec3(vec):
 def _player_loc():
     """Return the player's location."""
     return _to_my_vec3(_MINECRAFT.player.getTilePos())
+
+
+def _adj_dirs():
+    """Return the adjacent directions."""
+    return [_Vec3(1, 0, 0), _Vec3(-1, 0, 0), _Vec3(0, 0, 1), _Vec3(0, 0, -1)]
