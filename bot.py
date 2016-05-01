@@ -15,9 +15,12 @@ _AIR = block.AIR.id
 _WATER = block.WATER.id
 _LAVA = block.LAVA.id
 
+_DELAY = 1
+
 
 class _Vec3(Vec3):
-    """A Vec3 that is hashable"""
+    """A Vec3 that is hashable. Everything in this program should use this
+    class."""
 
     def __hash__(self):
         """Return the hash."""
@@ -30,7 +33,6 @@ class _GenericBot:
     def __init__(self, pos, inventory=None):
         """Initialize with an empty inventory.
 
-        pos should be a Vec3.
         inventory is a dictionary. If None, an empty one will be used."""
         if inventory is None:
             self._inventory = {}
@@ -75,6 +77,31 @@ class _GenericBot:
         """Get the block at the position. pos is a _Vec3 object."""
         raise NotImplementedError
 
+    def _place(self, loc, exclude=None, block=None):
+        """Place a block from the inventory only.
+
+        loc is a _Vec3.
+        If exclude is not None, place a block that is not 'exclude'.
+        If block is not None, place that block only.
+        """
+        pass #todo
+
+    def _move_down(self):
+        """Move and mine the block below."""
+        pass #todo
+
+    def _move_up(self, exclude=None):
+        """Move and place a block below.
+
+        If exclude is not None, place a block that is not 'exclude'.
+        """
+        self._move(self._pos + _Vec3(0, 1, 0))
+        self._place(self._pos + _Vec3(0, -1, 0), exclude)
+
+    def _mine(self, loc):
+        """Mine the block. loc is a _Vec3."""
+        pass #todo
+
     def _get_move_actions(self):
         """Return a list of legal movement actions."""
         return [] #todo
@@ -96,7 +123,7 @@ class _GenericBot:
         raise NotImplementedError
 
     def _move(self, pos):
-        """Move there. pos should be a Vec3."""
+        """Move there only. pos should be a Vec3."""
         self._pos = deepcopy(pos)
 
 
@@ -122,7 +149,7 @@ class _ImaginaryBot(_GenericBot):
         if pos in self._changes:
             return self._changes[pos]
         else:
-            return self._mc.getBlock(pos)
+            return _MINECRAFT.getBlock(pos)
 
 
 class Bot(_GenericBot):
@@ -135,12 +162,14 @@ class Bot(_GenericBot):
     def __init__(self):
         """Create a bot next to the player."""
         pos = _MINECRAFT.player.getTilePos() + Vec3(2, 0, 0)
+        pos = _Vec3(pos.x, pos.y, pos.z)
         while _MINECRAFT.getBlock(pos) == _AIR:
             pos.y -= 1
         while _MINECRAFT.getBlock(pos) != _AIR:
             pos.y += 1
         _GenericBot.__init__(self, pos)
-        self._move(pos)
+        self._pos = pos
+        self._move(self._pos)
 
     def fetch(self, block_name):
         """Mine and return a block to the player."""
@@ -149,11 +178,10 @@ class Bot(_GenericBot):
         block_loc = self._get_block_loc(block_id)
         mine_prob = _MineProblem(imag_bot, block_loc, block_id)
         mine_actions = astar(mine_prob, mine_heuristic)
-        self.take_actions(mine_actions)
+        self.take_actions(mine_actions, _DELAY)
         imag_bot = _ImaginaryBot(self._pos, self._inventory)
         return_prob = _ReturnProblem(imag_bot, block_id)
         return_actions = astar(return_prob, return_heuristic)
-        actions = mine_actions + return_actions
         #todo: Place the block mined next to the player
 
     def _get_block_loc(self, block_id):
@@ -173,7 +201,7 @@ class Bot(_GenericBot):
     def _move(self, pos):
         """Move there, and set the appropriate blocks."""
         self._set_block(self._pos, _AIR)
-        self._set_block(self._pos + Vec3(0, 1, 0), _AIR)
+        self._set_block(self._pos + _Vec3(0, 1, 0), _AIR)
         self._set_block(pos, self._BOT_BLOCK)
         self._set_block(pos + Vec3(0, 1, 0), self._BOT_BLOCK)
         self._pos = pos
