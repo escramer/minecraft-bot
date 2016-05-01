@@ -191,9 +191,16 @@ class Bot(_GenericBot):
         mine_actions = astar(mine_prob, mine_heuristic)
         self.take_actions(mine_actions, _DELAY)
         imag_bot = _ImaginaryBot(self._pos, self._inventory)
-        return_prob = _ReturnProblem(imag_bot, block_id)
+        player_loc = _player_loc()
+        return_prob = _ReturnProblem(imag_bot, block_id, player_loc)
         return_actions = astar(return_prob, return_heuristic)
-        #todo: Place the block mined next to the player
+        imag_bot.take_actions(return_actions)
+        return_actions.append({
+            'func': '_place',
+            'args': (imag_bot.get_pos() + player_loc) / 2,
+            'kwargs': {'block': block_id}
+        })
+        self.take_actions(return_actions, _DELAY)
 
     def _get_block_loc(self, block_id):
         """Return the location of the block."""
@@ -287,7 +294,7 @@ class _ReturnProblem(SearchProblem):
         return rtn
 
 
-def mine_heuristic(bot, problem):
+def _mine_heuristic(bot, problem):
     """Return the mining heuristic.
 
     bot is an _ImaginaryBot.
@@ -295,10 +302,19 @@ def mine_heuristic(bot, problem):
     return 0 #todo
 
 
-def return_heurist(bot, problem):
+def _return_heurist(bot, problem):
     """Return the return heuristic.
 
     bot is an _ImaginaryBot.
     """
     return 0 #todo
 
+
+def _to_my_vec3(vec):
+    """Return the _Vec3 alternative of the Vec3."""
+    return _Vec3(vec.x, vec.y, vec.z)
+
+
+def _player_loc():
+    """Return the player's location."""
+    return _to_my_vec3(_MINECRAFT.player.getTilePos())
