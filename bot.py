@@ -84,7 +84,27 @@ class _GenericBot:
         If exclude is not None, place a block that is not 'exclude'.
         If block is not None, place that block only.
         """
-        pass #todo
+        if not self._inventory:
+            raise Exception('Inventory empty')
+
+        if block is None:
+            for key in self._inventory:
+                if key != exclude:
+                    block = key
+                    break
+            else:
+                raise Exception((
+                    'You requested not to place %s, but it is the only '
+                    'block in the inventory.' % exclude
+                ))
+
+        if self._inventory[block] == 1:
+            del self._inventory[block]
+        else:
+            self._inventory[block] -= 1
+
+        self._set_block(loc, block)
+            
 
     def _move_down(self):
         """Move and mine the block below."""
