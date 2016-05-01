@@ -257,13 +257,13 @@ class _ReturnProblem(SearchProblem):
     """The problem of returning to the player. This does not place the block
     next to the player."""
 
-    def __init__(self, imag_bot, block):
+    def __init__(self, imag_bot, block, player_loc):
         """Initialized the problem with an _ImaginaryBot.
 
         block is a block id."""
         self._bot = image_bot
         self._block = block
-        self._player_loc = _MINECRAFT.player.getTilePos()
+        self._player_loc = player_loc
 
     def getStartState(self):
         """Return the bot passed in."""
