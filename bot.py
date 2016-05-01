@@ -108,7 +108,17 @@ class _GenericBot:
 
     def _move_down(self):
         """Move and mine the block below."""
-        pass #todo
+        new_pos = self._pos + _Vec3(0, -1, 0)
+        block = self._get_block(new_pos)
+        self._add_to_inv(block)
+        self._move(new_pos)
+        
+    def _add_to_inv(self, block):
+        """Add the block to the inventory."""
+        if block in self._inventory:
+            self._inventory[block] += 1
+        else:
+            self._inventory[block] = 1
 
     def _move_up(self, exclude=None):
         """Move and place a block below.
