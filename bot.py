@@ -164,8 +164,7 @@ class _GenericBot:
         if hidden_block == _WATER or hidden_block not in {_AIR, _LAVA}:
             rtn.append({'func': '_move_down'})
 
-        # Check for side moves
-        
+        # Check for side moves        
         for dir_ in _adj_dirs():
             rtn.extend(self._side_moves(dir_, can_move_up))
 
@@ -215,7 +214,10 @@ class _GenericBot:
             
     def _surrounded(self):
         """Return whether or not the bot is surrounded by water."""
-        return False #todo
+        for dir in _adj_dirs():
+            if self._get_block(self._pos + dir) != _WATER:
+                return False
+        return True
 
     def _get_mine_actions(self):
         """Return a list of legal mining actions."""
