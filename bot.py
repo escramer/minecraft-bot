@@ -220,8 +220,29 @@ class _GenericBot:
         return True
 
     def _get_mine_actions(self):
-        """Return a list of legal mining actions."""
-        return [] #todo
+        """Return a list of legal mining actions (that only involve mining
+        and not moving)."""
+        rtn = []
+        dont_mine = {_AIR, _WATER, _LAVA}
+        # Mine above.
+        pos_above = self._pos + _Vec3(0, 2, 0)
+        if self._get_block(pos_above) not in dont_mine:
+            rtn.append({
+                'func': '_mine',
+                'args': (pos_above,)
+            })
+
+        for dir in _adj_dirs():
+            pos = self._pos + dir
+            for _ in xrange(2):
+                if self._get_block(pos) not in dont_mine:
+                    rtn.append({
+                        'func': '_mine',
+                        'args': (pos,)
+                    })
+                pos = pos + _Vec3(0, 1, 0)
+
+        return rtn
 
     def _get_placement_actions(self, block=None):
         """Return a list of legal actions that only involve placing a block
