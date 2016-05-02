@@ -146,7 +146,8 @@ class _GenericBot:
         rtn = []
 
         # Check for moving up
-        if self._get_block(self._pos + _Vec3(0, 2, 0)) in {_AIR, _WATER}:
+        can_move_up = self._get_block(self._pos + _Vec3(0, 2, 0)) in {_AIR, _WATER}
+        if can_move_up:
             if self._surrounded():
                 rtn.append({
                     'func': '_move',
@@ -164,20 +165,54 @@ class _GenericBot:
             rtn.append({'func': '_move_down'})
 
         # Check for side moves
+        
         for dir_ in _adj_dirs():
-            rtn.extend(self._side_moves(dir_))
+            rtn.extend(self._side_moves(dir_, can_move_up))
 
         return rtn
 
-    def _side_moves(self, dir_):
+    def _side_moves(self, dir_, can_move_up):
         """Return the list of side moves.
 
-        dir_ is an adjacent direction."""
+        dir_ is an adjacent direction.
+        can_move_up is a boolean for whether or not the bot can move up.
+        """
         rtn = []
+        base_pos = self._pos + dir_
+        base_block = self._get_block(base_pos)
+        empty_blocks = {_AIR, _WATER}
 
         # Check if it can move up
-        pass #todo
+        if can_move_up and base_block not in {_AIR, _LAVA, _WATER}:
+            for vert_dir in [_Vec3(0, 1, 0), _Vec3(0, 2, 0)]:
+                if self._get_block(base_pos + vert_dir) not in empty_blocks:
+                    break
+            else:
+                rtn.append({
+                    'func': '_move',
+                    'args': (base_pos + _Vec3(0, 1, 0),)
+                })
 
+        # Check if it can move in that direction
+        for vert_dir in [_Vec3(), _Vec3(0, 1, 0)]:
+            if self._get_block(base_pos + vert_dir) not in empty_blocks:
+                break
+
+        # Fall
+        else:
+            max_height = 3 # It can drop at most this many spaces - 1.
+            pos = base_pos + _Vec3(0, -1, 0)
+            for _ in xrange(max_height):
+                block = self._get_block(pos)
+                if block != _AIR:
+                    if block != _LAVA:
+                        rtn.append({
+                            'func': '_move',
+                            'args': (pos + _Vec3(0, 1, 0),)
+                        })
+                    break
+                pos.y -= 1  
+            
     def _surrounded(self):
         """Return whether or not the bot is surrounded by water."""
         return False #todo
