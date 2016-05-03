@@ -512,7 +512,7 @@ def _mine_heuristic(bot, problem):
     return 0 #todo
 
 
-def _return_heurist(bot, problem):
+def _return_heuristic(bot, problem):
     """Return the return heuristic.
 
     bot is an _ImaginaryBot.
