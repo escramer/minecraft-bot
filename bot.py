@@ -250,14 +250,45 @@ class _GenericBot:
 
         block is a block id. It is the block that should not be placed. If None,
         any block can be placed."""
-        return [] #todo
+        if not self._has_blocks_to_place(exclude=block):
+            return []
+
+        dirs = [_Vec3(0, 2, 0)]
+        for dir in _adj_dirs():
+            dirs.extend([dir, dir + _Vec3(0, 1, 0)])
+            if self._get_block(self._pos + dir) in [_AIR, _WATER]:
+                dirs.append(dir + _Vec3(0, -1, 0))
+
+        rtn = []
+        for dir in dirs:
+            if self._can_place(self._pos + dir):
+                rtn.append({
+                    'func': '_place',
+                    'args': (self._pos + dir,),
+                    'kwargs': {'exclude': block}
+                })
+
+        return rtn
+
+    def _can_place(self, loc):
+        """Return whether or not the bot can place a block at that location
+        independent of what it has in its inventory."""
+        return True #todo
+
+    def _has_blocks_to_place(self, exclude=None):
+        """Return whether or not the bot can place a block from the
+        inventory. If exclude is None, any block can be placed."""
+        for block in self._inventory:
+            if block != exclude:
+                return True
+        return False
 
     def _set_block(self, pos, block):
         """Set a block. block is the block id. pos is a _Vec3 object."""
         raise NotImplementedError
 
     def _move(self, pos):
-        """Move there only. pos should be a Vec3."""
+        """Move there only."""
         self._pos = deepcopy(pos)
 
 
