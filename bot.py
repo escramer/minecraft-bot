@@ -273,7 +273,14 @@ class _GenericBot:
     def _can_place(self, loc):
         """Return whether or not the bot can place a block at that location
         independent of what it has in its inventory."""
-        return True #todo
+        non_blocks = [_AIR, _WATER, _LAVA]
+        player = [self._pos, self._pos + _Vec3(0, 1, 0)]
+        for dir in _adj_dirs + [_Vec3(0, 1, 0), _Vec3(0, -1, 0)]:
+            new_loc = loc + dir
+            if new_loc not in player and self._get_block(new_loc) \
+                    not in non_blocks:
+                return True
+        return False
 
     def _has_blocks_to_place(self, exclude=None):
         """Return whether or not the bot can place a block from the
