@@ -7,13 +7,14 @@ import mcpi.minecraft as minecraft
 from mcpi.vec3 import Vec3
 import mcpi.block as block
 
-from search import SearchProblem, astar
+from search import SearchProblem, astar, bfs
 
 _MINECRAFT = minecraft.Minecraft.create()
 
 _AIR = block.AIR.id
 _WATER = block.WATER.id
 _LAVA = block.LAVA.id
+_BEDROCK = block.BEDROCK.id
 
 _DELAY = 1
 
@@ -76,7 +77,7 @@ class _GenericBot:
         """Return whether or not the bot contains the block id."""
         return block in self._inventory
 
-    def get_block(self, pos):
+    def _get_block(self, pos):
         """Get the block at the position. pos is a _Vec3 object."""
         raise NotImplementedError
 
@@ -314,7 +315,7 @@ class _ImaginaryBot(_GenericBot):
         """Set a block. block is the block id. pos is a _Vec3 object."""
         self._changes[deepcopy(pos)] = block
 
-    def get_block(self, pos):
+    def _get_block(self, pos):
         """Get the block at the position.
 
         pos is a _Vec3 object."""
@@ -322,6 +323,10 @@ class _ImaginaryBot(_GenericBot):
             return self._changes[pos]
         else:
             return _MINECRAFT.getBlock(pos)
+
+    def get_block(self, pos):
+        """The public version."""
+        return self._get_block(pos)
 
     def _key_vals(self, dict_):
         """Return a list of key-val tuples."""
@@ -376,7 +381,9 @@ class Bot(_GenericBot):
 
     def _get_block_loc(self, block_id):
         """Return the location of the block."""
-        return _Vec3() #todo
+        find_prob = FindProblem(self._pos, block_id)
+        dirs = bfs(find_prob)
+        return self._pos + sum(dirs)
 
     def _set_block(self, pos, block):
         """Place an actual block in the world.
@@ -384,7 +391,7 @@ class Bot(_GenericBot):
         block is a block id."""
         _MINECRAFT.setBlock(pos, block)
 
-    def get_block(self, pos):
+    def _get_block(self, pos):
         """Get the block at the position."""
         return _MINECRAFT.getBlock(pos)
 
@@ -395,6 +402,37 @@ class Bot(_GenericBot):
         self._set_block(pos, self._BOT_BLOCK)
         self._set_block(pos + Vec3(0, 1, 0), self._BOT_BLOCK)
         self._pos = pos
+
+
+class FindProblem(SearchProblem):
+    """Problem for finding the location of a block in the world.
+
+    A state in this problem is a location.
+    """
+
+    _DIRS = _adj_dirs() + 
+
+    def __init__(self, start_loc, block_id):
+        """Initialize."""
+        self._start_loc = start_loc
+        self._block_id = block_id
+
+    def getStartState(self):
+        """Return the starting location."""
+        return self._start_loc
+
+    def isGoalState(self, state):
+        return _MINECRAFT.getBlock(state) == self._block_id
+
+    def getSuccessors(self, state):
+        """Return the successors."""
+        rtn = []
+        for dir in _all_dirs():
+            successor = state + dir
+            if successor.y <= _MINECRAFT.getHeight(successor.x, successor.z) \
+                    and _MINECRAFT.getBlock(successor) != _BEDROCK:
+                rtn.append((successor, dir, 1))
+        return rtn
 
 
 class _MineProblem(SearchProblem):
@@ -410,7 +448,7 @@ class _MineProblem(SearchProblem):
         self._block_loc = deep_copy(block_loc)
         self._block_id = block_id
 
-    def get_block_loc(self):
+    def _get_block_loc(self):
         """Return the block."""
         return deepcopy(self._block_loc)
 
@@ -495,3 +533,8 @@ def _player_loc():
 def _adj_dirs():
     """Return the adjacent directions."""
     return [_Vec3(1, 0, 0), _Vec3(-1, 0, 0), _Vec3(0, 0, 1), _Vec3(0, 0, -1)]
+
+
+def _all_dirs():
+    """Return all adjacent directions."""
+    return _adj_dirs + [_Vec3(0, 1, 0), _Vec3(0, -1, 0)]
