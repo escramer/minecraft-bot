@@ -491,7 +491,7 @@ class _ReturnProblem(SearchProblem):
         diff = state.get_pos() - self._player_loc
         return diff.y == 0 and (diff.x == 0 or diff.z == 0) and \
             abs(diff.x) + abs(diff.z) == 2 and \
-            state.get_block(self._player_loc + diff/2 + Vec3(0, -1, 0)) not in \
+            state.get_block(self._player_loc + diff/2 + _Vec3(0, -1, 0)) not in \
             (_AIR, _LAVA, _WATER)
 
     def getSuccessors(self, state):
