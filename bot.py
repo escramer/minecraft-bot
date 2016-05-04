@@ -305,9 +305,7 @@ class _ImaginaryBot(_GenericBot):
     in the world."""
 
     def __init__(self, pos, inventory=None):
-        """Create a new bot.
-
-        pos should be a Vec3."""
+        """Create a new bot."""
         _GenericBot.__init__(self, pos, inventory)
         self._changes = {} # Changes to the world
 
@@ -448,9 +446,13 @@ class _MineProblem(SearchProblem):
         self._block_loc = deep_copy(block_loc)
         self._block_id = block_id
 
-    def _get_block_loc(self):
-        """Return the block."""
+    def get_block_loc(self):
+        """Return the block location."""
         return deepcopy(self._block_loc)
+
+    def get_block_id(self):
+        """Return the block it's trying to mine."""
+        return self._block_id
 
     def getStartState(self):
         """Return the bot passed in."""
@@ -509,7 +511,10 @@ def _mine_heuristic(bot, problem):
 
     bot is an _ImaginaryBot.
     """
-    return 0 #todo
+    if bot.contains(problem.get_block_id()):
+        return 0
+
+    
 
 
 def _return_heuristic(bot, problem):
