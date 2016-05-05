@@ -16,6 +16,8 @@ _WATER = block.WATER.id
 _LAVA = block.LAVA.id
 _BEDROCK = block.BEDROCK.id
 
+_DROP = 2 # It can drop at most this many
+_DROP_PLUS_1 = _DROP + 1
 _DELAY = 1
 
 
@@ -200,9 +202,8 @@ class _GenericBot:
 
         # Fall
         else:
-            max_height = 3 # It can drop at most this many spaces - 1.
             pos = base_pos + _Vec3(0, -1, 0)
-            for _ in xrange(max_height):
+            for _ in xrange(_DROP_PLUS_1):
                 block = self._get_block(pos)
                 if block != _AIR:
                     if block != _LAVA:
@@ -514,7 +515,10 @@ def _mine_heuristic(bot, problem):
     if bot.contains(problem.get_block_id()):
         return 0
 
-    
+    # If on same level, manhattan_dist
+    # If 1 above, 1 + manhattan_dist
+    # If 2 above, 1 + manhattan_dist
+    # If 3 above
 
 
 def _return_heuristic(bot, problem):
@@ -543,3 +547,5 @@ def _adj_dirs():
 def _all_dirs():
     """Return all adjacent directions."""
     return _adj_dirs + [_Vec3(0, 1, 0), _Vec3(0, -1, 0)]
+
+
