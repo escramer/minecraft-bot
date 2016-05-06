@@ -515,11 +515,45 @@ def _mine_heuristic(bot, problem):
     if bot.contains(problem.get_block_id()):
         return 0
 
-    # If on same level, manhattan_dist
-    # If 1 above, 1 + manhattan_dist
-    # If 2 above, 1 + manhattan_dist
-    # If 3 above
+    bot_pos = bot.get_pos()
+    dest_pos = problem.get_block_loc()
 
+    # If man == dy: return man + 1
+    # If man > dy: return man
+    # If man < dy: return dy?
+    man_dist = _manhattan((bot_pos.x, bot_pos.z), (dest_pos.x, dest_pos.z))
+    y_diff = bot_pos.y - dest_pos.y
+    if y_diff < 0:
+        y_diff += 1
+
+    if y_diff == 0:
+        return man_dist
+
+    # Transform so that it's only dropping
+    drop = _DROP if y_diff > 0 else 1
+    y_diff = abs(y_diff)
+
+    drops = _drops(y_diff, drop)
+
+    if man_dist > drops:
+        return man_dist
+    if man_dist == drops:
+        return man_dist + 1
+    if drop == 1:
+        return drops
+    if y_diff % drop == 1:
+        return drops
+    return drops + 1
+    
+
+def _drops(dist, drop):
+    """Return the number of times it takes to drop a distance dist. drop is the
+    length of one drop. Both are assumed positive."""
+    rtn = dist / drop
+    if dist % drop != 0:
+        rtn += 1
+    return rtn
+    
 
 def _return_heuristic(bot, problem):
     """Return the return heuristic.
@@ -549,3 +583,6 @@ def _all_dirs():
     return _adj_dirs + [_Vec3(0, 1, 0), _Vec3(0, -1, 0)]
 
 
+def _manhattan(pos1, pos2):
+    """Return the manhattan distance. pos1 and pos2 should be iterable."""
+    return sum(abs(val1 - val2) for val1, val2 in zip(pos1, pos2))
