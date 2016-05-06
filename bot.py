@@ -8,8 +8,7 @@ from mcpi.vec3 import Vec3
 import mcpi.block as block
 
 from search import SearchProblem, astar, bfs
-
-_MINECRAFT = minecraft.Minecraft.create()
+from singleton import singleton
 
 _AIR = block.AIR.id
 _WATER = block.WATER.id
@@ -321,7 +320,7 @@ class _ImaginaryBot(_GenericBot):
         if pos in self._changes:
             return self._changes[pos]
         else:
-            return _MINECRAFT.getBlock(pos)
+            return _get_mc().getBlock(pos)
 
     def get_block(self, pos):
         """The public version."""
@@ -348,11 +347,11 @@ class Bot(_GenericBot):
 
     def __init__(self):
         """Create a bot next to the player."""
-        pos = _MINECRAFT.player.getTilePos() + Vec3(2, 0, 0)
+        pos = _get_mc().player.getTilePos() + Vec3(2, 0, 0)
         pos = _Vec3(pos.x, pos.y, pos.z)
-        while _MINECRAFT.getBlock(pos) == _AIR:
+        while _get_mc().getBlock(pos) == _AIR:
             pos.y -= 1
-        while _MINECRAFT.getBlock(pos) != _AIR:
+        while _get_mc().getBlock(pos) != _AIR:
             pos.y += 1
         _GenericBot.__init__(self, pos)
         self._pos = pos
@@ -388,11 +387,11 @@ class Bot(_GenericBot):
         """Place an actual block in the world.
 
         block is a block id."""
-        _MINECRAFT.setBlock(pos, block)
+        _get_mc().setBlock(pos, block)
 
     def _get_block(self, pos):
         """Get the block at the position."""
-        return _MINECRAFT.getBlock(pos)
+        return _get_mc().getBlock(pos)
 
     def _move(self, pos):
         """Move there, and set the appropriate blocks."""
@@ -421,15 +420,15 @@ class FindProblem(SearchProblem):
         return self._start_loc
 
     def isGoalState(self, state):
-        return _MINECRAFT.getBlock(state) == self._block_id
+        return _get_mc().getBlock(state) == self._block_id
 
     def getSuccessors(self, state):
         """Return the successors."""
         rtn = []
         for dir in _all_dirs():
             successor = state + dir
-            if successor.y <= _MINECRAFT.getHeight(successor.x, successor.z) \
-                    and _MINECRAFT.getBlock(successor) != _BEDROCK:
+            if successor.y <= _get_mc().getHeight(successor.x, successor.z) \
+                    and _get_mc().getBlock(successor) != _BEDROCK:
                 rtn.append((successor, dir, 1))
         return rtn
 
@@ -591,7 +590,7 @@ def _to_my_vec3(vec):
 
 def _player_loc():
     """Return the player's location."""
-    return _to_my_vec3(_MINECRAFT.player.getTilePos())
+    return _to_my_vec3(_get_mc().player.getTilePos())
 
 
 def _adj_dirs():
@@ -607,3 +606,9 @@ def _all_dirs():
 def _manhattan(pos1, pos2):
     """Return the manhattan distance. pos1 and pos2 should be iterable."""
     return sum(abs(val1 - val2) for val1, val2 in zip(pos1, pos2))
+
+
+@singleton
+def _get_mc():
+    """Return the Minecraft instance."""
+    return minecraft.Minecraft.create()
