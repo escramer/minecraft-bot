@@ -74,15 +74,15 @@ class _GenericBot:
         return self._get_move_actions(block_) + self._get_mine_actions() + \
             self._get_placement_actions(block_)
 
-    def contains(self, block):
+    def contains(self, block_):
         """Return whether or not the bot contains the block id."""
-        return block in self._inventory
+        return block_ in self._inventory
 
     def _get_block(self, pos):
         """Get the block at the position. pos is a _Vec3 object."""
         raise NotImplementedError
 
-    def _place(self, loc, exclude=None, block=None):
+    def _place(self, loc, exclude=None, block_=None):
         """Place a block from the inventory only.
 
         loc is a _Vec3.
@@ -92,10 +92,10 @@ class _GenericBot:
         if not self._inventory:
             raise Exception('Inventory empty')
 
-        if block is None:
+        if block_ is None:
             for key in self._inventory:
                 if key != exclude:
-                    block = key
+                    block_ = key
                     break
             else:
                 raise Exception((
@@ -103,10 +103,13 @@ class _GenericBot:
                     'block in the inventory.' % exclude
                 ))
 
-        if self._inventory[block] == 1:
-            del self._inventory[block]
+        if block_ not in self._inventory:
+            raise Exception('Block %s is not in the inventory' % block_)
+
+        if self._inventory[block_] == 1:
+            del self._inventory[block_]
         else:
-            self._inventory[block] -= 1
+            self._inventory[block_] -= 1
 
         self._set_block(loc, block)
             
