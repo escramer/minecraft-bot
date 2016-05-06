@@ -66,13 +66,13 @@ class _GenericBot:
         """Return the position."""
         return deepcopy(self._pos)
 
-    def get_legal_actions(self, block=None):
+    def get_legal_actions(self, block_=None):
         """Return a list of legal actions.
 
-        If block is None, return all legal actions. Otherwise, return all
+        If block_ is None, return all legal actions. Otherwise, return all
         legal actions that don't involve placing the block."""
-        return self._get_move_actions(block) + self._get_mine_actions() + \
-            self._get_placement_actions(block)
+        return self._get_move_actions(block_) + self._get_mine_actions() + \
+            self._get_placement_actions(block_)
 
     def contains(self, block):
         """Return whether or not the bot contains the block id."""
