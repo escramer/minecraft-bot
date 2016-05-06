@@ -485,6 +485,10 @@ class _ReturnProblem(SearchProblem):
         self._block = block
         self._player_loc = player_loc
 
+    def get_player_loc(self):
+        """Return the player location."""
+        return deepcopy(self._player_loc)
+
     def getStartState(self):
         """Return the bot passed in."""
         return self._bot
@@ -560,7 +564,24 @@ def _return_heuristic(bot, problem):
 
     bot is an _ImaginaryBot.
     """
-    return 0 #todo
+    bot_pos = bot.get_pos()
+    player_pos = problem.get_player_loc()
+    bot_plane_pos = (bot.x, bot.z)
+
+    y_diff = bot_pos.y - player_pos.y
+
+    drop = _DROP if y_diff > 0 else 1
+    y_diff = abs(y_diff)
+    drops = _drops(y_diff, drop)
+    min_man = float('inf')
+    for dir in _adj_dirs():
+        loc = player_pos + 2 * dir
+        man_dist = _manhattan(bot_plane_pos, (loc.x, loc.z))
+        if man_dist < min_man:
+            min_man = man_dist
+        if man_dist < drops:
+            return drops
+    return min_man
 
 
 def _to_my_vec3(vec):
