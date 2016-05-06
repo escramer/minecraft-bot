@@ -408,8 +408,6 @@ class FindProblem(SearchProblem):
     A state in this problem is a location.
     """
 
-    _DIRS = _adj_dirs() + 
-
     def __init__(self, start_loc, block_id):
         """Initialize."""
         self._start_loc = start_loc
