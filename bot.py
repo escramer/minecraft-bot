@@ -117,17 +117,17 @@ class _GenericBot:
     def _move_down(self):
         """Move and mine the block below."""
         new_pos = self._pos + _Vec3(0, -1, 0)
-        block = self._get_block(new_pos)
-        if block != _WATER:
-            self._add_to_inv(block)
+        block_ = self._get_block(new_pos)
+        if block_ != _WATER:
+            self._add_to_inv(block_)
         self._move(new_pos)
         
-    def _add_to_inv(self, block):
+    def _add_to_inv(self, block_):
         """Add the block to the inventory."""
-        if block in self._inventory:
-            self._inventory[block] += 1
+        if block_ in self._inventory:
+            self._inventory[block_] += 1
         else:
-            self._inventory[block] = 1
+            self._inventory[block_] = 1
 
     def _move_up(self, exclude=None):
         """Move and place a block below.
@@ -139,8 +139,8 @@ class _GenericBot:
 
     def _mine(self, loc):
         """Mine the block. loc is a _Vec3."""
-        block = self._get_block(loc)
-        self.add_to_inv(block)
+        bloc_k = self._get_block(loc)
+        self._add_to_inv(block_)
         self._set_block(loc, _AIR)
 
     def _get_move_actions(self, exclude=None):
