@@ -343,7 +343,7 @@ class Bot(_GenericBot):
 
     All vector arguments are Vec3s."""
 
-    _BOT_BLOCK = block.IRON.id
+    _BOT_BLOCK = block.IRON_BLOCK.id
 
     def __init__(self):
         """Create a bot next to the player."""
