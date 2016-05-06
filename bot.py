@@ -206,9 +206,9 @@ class _GenericBot:
         else:
             pos = base_pos + _Vec3(0, -1, 0)
             for _ in xrange(_DROP_PLUS_1):
-                block = self._get_block(pos)
-                if block != _AIR:
-                    if block != _LAVA:
+                block_ = self._get_block(pos)
+                if block_ != _AIR:
+                    if block_ != _LAVA:
                         rtn.append({
                             'func': '_move',
                             'args': (pos + _Vec3(0, 1, 0),)
