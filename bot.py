@@ -139,7 +139,7 @@ class _GenericBot:
 
     def _mine(self, loc):
         """Mine the block. loc is a _Vec3."""
-        bloc_k = self._get_block(loc)
+        block_ = self._get_block(loc)
         self._add_to_inv(block_)
         self._set_block(loc, _AIR)
 
