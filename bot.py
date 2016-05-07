@@ -79,13 +79,12 @@ class _GenericBot:
         return block_ in self._inventory
 
     def _get_block(self, pos):
-        """Get the block at the position. pos is a _Vec3 object."""
+        """Get the block at the position."""
         raise NotImplementedError
 
     def _place(self, loc, exclude=None, block_=None):
         """Place a block from the inventory only.
 
-        loc is a _Vec3.
         If exclude is not None, place a block that is not 'exclude'.
         If block is not None, place that block only.
         """
@@ -111,7 +110,7 @@ class _GenericBot:
         else:
             self._inventory[block_] -= 1
 
-        self._set_block(loc, block)
+        self._set_block(loc, block_)
             
 
     def _move_down(self):
