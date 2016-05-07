@@ -248,13 +248,13 @@ class _GenericBot:
 
         return rtn
 
-    def _get_placement_actions(self, block=None):
+    def _get_placement_actions(self, exclude=None):
         """Return a list of legal actions that only involve placing a block
         from the inventory.
 
-        block is a block id. It is the block that should not be placed. If None,
+        exclude is a block id. It is the block that should not be placed. If None,
         any block can be placed."""
-        if not self._has_blocks_to_place(exclude=block):
+        if not self._has_blocks_to_place(exclude=exclude):
             return []
 
         dirs = [_Vec3(0, 2, 0)]
@@ -270,7 +270,7 @@ class _GenericBot:
                 rtn.append({
                     'func': '_place',
                     'args': (pos,),
-                    'kwargs': {'exclude': block}
+                    'kwargs': {'exclude': exclude}
                 })
 
         return rtn
