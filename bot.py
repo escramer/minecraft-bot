@@ -354,6 +354,11 @@ class Bot(_GenericBot):
         self._pos = pos
         self._move(self._pos)
 
+    def destroy(self):
+        """Set itself to air."""
+        self._set_block(self._pos, _AIR)
+        self._set_block(self._pos + _Vec3(0, 1, 0), _AIR)
+
     def fetch(self, block_name):
         """Mine and return a block to the player."""
         imag_bot = _ImaginaryBot(self._pos, self._inventory)
