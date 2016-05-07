@@ -600,7 +600,7 @@ def _adj_dirs():
 
 def _all_dirs():
     """Return all adjacent directions."""
-    return _adj_dirs + [_Vec3(0, 1, 0), _Vec3(0, -1, 0)]
+    return _adj_dirs() + [_Vec3(0, 1, 0), _Vec3(0, -1, 0)]
 
 
 def _manhattan(pos1, pos2):
