@@ -290,13 +290,13 @@ class _GenericBot:
     def _has_blocks_to_place(self, exclude=None):
         """Return whether or not the bot can place a block from the
         inventory. If exclude is None, any block can be placed."""
-        for block in self._inventory:
-            if block != exclude:
+        for block_ in self._inventory:
+            if block_ != exclude:
                 return True
         return False
 
-    def _set_block(self, pos, block):
-        """Set a block. block is the block id. pos is a _Vec3 object."""
+    def _set_block(self, pos, block_):
+        """Set a block. block_ is the block id."""
         raise NotImplementedError
 
     def _move(self, pos):
