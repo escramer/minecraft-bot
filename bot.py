@@ -478,7 +478,7 @@ class _ReturnProblem(SearchProblem):
         """Initialized the problem with an _ImaginaryBot.
 
         block is a block id."""
-        self._bot = image_bot
+        self._bot = imag_bot
         self._block = block_
         self._player_loc = player_loc
 
