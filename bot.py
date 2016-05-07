@@ -218,8 +218,8 @@ class _GenericBot:
             
     def _surrounded(self):
         """Return whether or not the bot is surrounded by water."""
-        for dir in _adj_dirs():
-            if self._get_block(self._pos + dir) != _WATER:
+        for dir_ in _adj_dirs():
+            if self._get_block(self._pos + dir_) != _WATER:
                 return False
         return True
 
@@ -236,8 +236,8 @@ class _GenericBot:
                 'args': (pos_above,)
             })
 
-        for dir in _adj_dirs():
-            pos = self._pos + dir
+        for dir_ in _adj_dirs():
+            pos = self._pos + dir_
             for _ in xrange(2):
                 if self._get_block(pos) not in dont_mine:
                     rtn.append({
@@ -258,17 +258,18 @@ class _GenericBot:
             return []
 
         dirs = [_Vec3(0, 2, 0)]
-        for dir in _adj_dirs():
-            dirs.extend([dir, dir + _Vec3(0, 1, 0)])
-            if self._get_block(self._pos + dir) in [_AIR, _WATER]:
-                dirs.append(dir + _Vec3(0, -1, 0))
+        for dir_ in _adj_dirs():
+            dirs.extend([dir_, dir_ + _Vec3(0, 1, 0)])
+            if self._get_block(self._pos + dir_) in [_AIR, _WATER]:
+                dirs.append(dir_ + _Vec3(0, -1, 0))
 
         rtn = []
-        for dir in dirs:
-            if self._can_place(self._pos + dir):
+        for dir_ in dirs:
+            pos = self._pos + dir_
+            if self._can_place(pos):
                 rtn.append({
                     'func': '_place',
-                    'args': (self._pos + dir,),
+                    'args': (pos,),
                     'kwargs': {'exclude': block}
                 })
 
@@ -279,8 +280,8 @@ class _GenericBot:
         independent of what it has in its inventory."""
         non_blocks = [_AIR, _WATER, _LAVA]
         player = [self._pos, self._pos + _Vec3(0, 1, 0)]
-        for dir in _adj_dirs + [_Vec3(0, 1, 0), _Vec3(0, -1, 0)]:
-            new_loc = loc + dir
+        for dir_ in _adj_dirs + [_Vec3(0, 1, 0), _Vec3(0, -1, 0)]:
+            new_loc = loc + dir_
             if new_loc not in player and self._get_block(new_loc) \
                     not in non_blocks:
                 return True
@@ -426,11 +427,11 @@ class FindProblem(SearchProblem):
     def getSuccessors(self, state):
         """Return the successors."""
         rtn = []
-        for dir in _all_dirs():
-            successor = state + dir
+        for dir_ in _all_dirs():
+            successor = state + dir_
             if successor.y <= _get_mc().getHeight(successor.x, successor.z) \
                     and _get_mc().getBlock(successor) != _BEDROCK:
-                rtn.append((successor, dir, 1))
+                rtn.append((successor, dir_, 1))
         return rtn
 
 
@@ -574,8 +575,8 @@ def _return_heuristic(bot, problem):
     y_diff = abs(y_diff)
     drops = _drops(y_diff, drop)
     min_man = float('inf')
-    for dir in _adj_dirs():
-        loc = player_pos + 2 * dir
+    for dir_ in _adj_dirs():
+        loc = player_pos + 2 * dir_
         man_dist = _manhattan(bot_plane_pos, (loc.x, loc.z))
         if man_dist < min_man:
             min_man = man_dist
