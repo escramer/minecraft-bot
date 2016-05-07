@@ -346,10 +346,6 @@ class Bot(_GenericBot):
         """Create a bot next to the player."""
         pos = _get_mc().player.getTilePos() + Vec3(2, 0, 0)
         pos = _Vec3(pos.x, pos.y, pos.z)
-        while _get_mc().getBlock(pos) == _AIR:
-            pos.y -= 1
-        while _get_mc().getBlock(pos) != _AIR:
-            pos.y += 1
         _GenericBot.__init__(self, pos)
         self._pos = pos
         self._move(self._pos)
