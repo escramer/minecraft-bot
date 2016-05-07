@@ -137,7 +137,7 @@ class _GenericBot:
         self._place(self._pos + _Vec3(0, -1, 0), exclude)
 
     def _mine(self, loc):
-        """Mine the block. loc is a _Vec3."""
+        """Mine the block."""
         block_ = self._get_block(loc)
         self._add_to_inv(block_)
         self._set_block(loc, _AIR)
@@ -317,9 +317,7 @@ class _ImaginaryBot(_GenericBot):
         self._changes[deepcopy(pos)] = block
 
     def _get_block(self, pos):
-        """Get the block at the position.
-
-        pos is a _Vec3 object."""
+        """Get the block at the position."""
         if pos in self._changes:
             return self._changes[pos]
         else:
@@ -397,7 +395,7 @@ class Bot(_GenericBot):
         self._set_block(self._pos, _AIR)
         self._set_block(self._pos + _Vec3(0, 1, 0), _AIR)
         self._set_block(pos, self._BOT_BLOCK)
-        self._set_block(pos + Vec3(0, 1, 0), self._BOT_BLOCK)
+        self._set_block(pos + _Vec3(0, 1, 0), self._BOT_BLOCK)
         self._pos = pos
 
 
