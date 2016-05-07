@@ -28,6 +28,10 @@ class _Vec3(Vec3):
         """Return the hash."""
         return hash((self.x, self.y, self.z))
 
+    def clone(self):
+        """Return a clone."""
+        return _Vec3(self.x, self.y, self.z)
+
 
 class _GenericBot:
     """A generic bot."""
@@ -408,7 +412,7 @@ class FindProblem(SearchProblem):
 
     def __init__(self, start_loc, block_id):
         """Initialize."""
-        self._start_loc = start_loc
+        self._start_loc = deepcopy(start_loc)
         self._block_id = block_id
 
     def getStartState(self):
