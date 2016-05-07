@@ -441,7 +441,7 @@ class _MineProblem(SearchProblem):
         block_loc is a Vec3.
         """
         self._bot = imag_bot
-        self._block_loc = deep_copy(block_loc)
+        self._block_loc = deepcopy(block_loc)
         self._block_id = block_id
 
     def get_block_loc(self):
