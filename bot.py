@@ -330,15 +330,11 @@ class _ImaginaryBot(_GenericBot):
         """The public version."""
         return self._get_block(pos)
 
-    def _key_vals(self, dict_):
-        """Return a list of key-val tuples."""
-        return [(key, val) for key, val in dict_.iteritems()]
-
     def __hash__(self):
         """Return the hash."""
         return hash(frozenset([self._pos] + \
-                 self._key_vals(self._inventory) + \
-                 self._key_vals(self._changes)
+                 _key_vals(self._inventory) + \
+                 _key_vals(self._changes)
         ))
 
 
@@ -614,3 +610,9 @@ def _manhattan(pos1, pos2):
 def _get_mc():
     """Return the Minecraft instance."""
     return minecraft.Minecraft.create()
+
+
+def _key_vals(dict_):
+    """Return a list of key-val tuples."""
+    return [(key, val) for key, val in dict_.iteritems()]
+
