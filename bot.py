@@ -313,8 +313,8 @@ class _ImaginaryBot(_GenericBot):
         _GenericBot.__init__(self, pos, inventory)
         self._changes = {} # Changes to the world
 
-    def _set_block(self, pos, block):
-        """Set a block. block is the block id. pos is a _Vec3 object."""
+    def _set_block(self, pos, block_):
+        """Set a block. block_ is the block id."""
         self._changes[deepcopy(pos)] = block
 
     def _get_block(self, pos):
