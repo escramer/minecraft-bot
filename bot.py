@@ -383,11 +383,11 @@ class Bot(_GenericBot):
         dirs = bfs(find_prob)
         return self._pos + sum(dirs)
 
-    def _set_block(self, pos, block):
+    def _set_block(self, pos, block_):
         """Place an actual block in the world.
 
         block is a block id."""
-        _get_mc().setBlock(pos, block)
+        _get_mc().setBlock(pos, block_)
 
     def _get_block(self, pos):
         """Get the block at the position."""
