@@ -363,12 +363,12 @@ class Bot(_GenericBot):
         block_id = getattr(block, block_name).id
         block_loc = self._get_block_loc(block_id)
         mine_prob = _MineProblem(imag_bot, block_loc, block_id)
-        mine_actions = astar(mine_prob, mine_heuristic)
+        mine_actions = astar(mine_prob, _mine_heuristic)
         self.take_actions(mine_actions, _DELAY)
         imag_bot = _ImaginaryBot(self._pos, self._inventory)
         player_loc = _player_loc()
         return_prob = _ReturnProblem(imag_bot, block_id, player_loc)
-        return_actions = astar(return_prob, return_heuristic)
+        return_actions = astar(return_prob, _return_heuristic)
         imag_bot.take_actions(return_actions)
         return_actions.append({
             'func': '_place',
