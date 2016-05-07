@@ -474,12 +474,12 @@ class _ReturnProblem(SearchProblem):
     """The problem of returning to the player. This does not place the block
     next to the player."""
 
-    def __init__(self, imag_bot, block, player_loc):
+    def __init__(self, imag_bot, block_, player_loc):
         """Initialized the problem with an _ImaginaryBot.
 
         block is a block id."""
         self._bot = image_bot
-        self._block = block
+        self._block = block_
         self._player_loc = player_loc
 
     def get_player_loc(self):
