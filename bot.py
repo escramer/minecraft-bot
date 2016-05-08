@@ -354,6 +354,19 @@ class Bot(_GenericBot):
         self._pos = pos
         self._move(self._pos)
 
+    @staticmethod
+    def destroy_all():
+        """Destroy all bots within a small distance (in case I forget to
+        destroy one)."""
+        player_loc = _get_player_loc()
+        minec = _get_mc()
+        rad = 10
+        for x in xrange(player_loc.x - rad, player_loc.x + rad):
+            for y in xrange(player_loc.y - rad, player_loc.y + rad):
+                for z in xrange(player_loc.z - rad, player_loc.z + rad):
+                    if minec.getBlock(x, y, z) == Bot._BOT_BLOCK:
+                        minec.setBlock(x, y, z, _AIR)
+
     def destroy(self):
         """Set itself to air."""
         self._set_block(self._pos, _AIR)
