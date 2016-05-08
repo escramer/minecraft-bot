@@ -358,7 +358,7 @@ class Bot(_GenericBot):
     def destroy_all():
         """Destroy all bots within a small distance (in case I forget to
         destroy one)."""
-        player_loc = _get_player_loc()
+        player_loc = _player_loc()
         minec = _get_mc()
         rad = 10
         for x in xrange(player_loc.x - rad, player_loc.x + rad):
